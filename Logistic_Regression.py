@@ -2,10 +2,10 @@ import numpy as np
 
 class LogisticRegressionL2:
     def __init__(self, learning_rate=0.01, max_iters=10000, C=0.01, tol=1e-4):
-        self.learning_rate = learning_rate  # Скорость обучения
-        self.max_iters = max_iters  # Количество итераций
-        self.weights = None  # Веса модели
-        self.bias = None  # Смещение (bias)
+        self.learning_rate = learning_rate
+        self.max_iters = max_iters
+        self.weights = None
+        self.bias = None
         self.C = C  # Коэффициент регуляризации
         self.tolerance = tol
 
@@ -13,26 +13,20 @@ class LogisticRegressionL2:
         return 1 / (1 + np.exp(-z))
 
     def _compute_loss(self, y, y_pred):
-        """
-        Формула:
-        L(y, y_pred) = (-1/m) * [Σ(y * log(y_pred) + (1 - y) * log(1 - y_pred))] + 
-                            (C/(2*m)) * Σ(w_i^2)
-        """
         m = len(y)
         # Огранииваем логарифм (0,1)
         epsilon = 1e-9
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
         
         loss = (-1 / m) * (np.dot(y, np.log(y_pred)) + np.dot(1 - y, np.log(1 - y_pred)))
-
         loss += (self.C / (2 * m)) * np.sum(self.weights ** 2)
 
         return loss
 
     def fit(self, X, y):
-        m, n = X.shape
+        n, m = X.shape
         y=np.where(y == 1, 1, 0)
-        self.weights = np.zeros(n)
+        self.weights = np.zeros(m)
         self.bias = 0
         prev_loss = float('inf')
 
@@ -40,10 +34,10 @@ class LogisticRegressionL2:
             linear_model = np.dot(X, self.weights) + self.bias
             y_pred = self._sigmoid(linear_model)
             
-            dw = (1 / m) * np.dot(X.T, (y_pred - y))
-            db = (1 / m) * np.sum(y_pred - y)
+            dw = (1 / n) * np.dot(X.T, (y_pred - y))
+            db = (1 / n) * np.sum(y_pred - y)
 
-            dw += (self.C / m) * self.weights
+            dw += (self.C / n) * self.weights
 
             self.weights -= self.learning_rate * dw
             self.bias -= self.learning_rate * db
@@ -52,7 +46,6 @@ class LogisticRegressionL2:
             # if i % 100 == 0:
             #     print(f"Итерация {i}, Потери: {current_loss}")
 
-            # Условие сходимости
             if abs(prev_loss - current_loss) < self.tolerance:
                 # print(f"Сходимость достигнута на итерации {i}")
                 break
