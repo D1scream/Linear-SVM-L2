@@ -31,7 +31,7 @@ X = data.data
 y = data.target
 y = np.where(y == 0, -1, 1)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=41)
 
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
@@ -145,19 +145,20 @@ print(f"Лучшее C для sklearn Logistic Regression: {sklearn_best_log_reg
 print(f"Лучшее C для sklearn Linear SVC: {sklearn_best_svc_C}, accuracy: {sklearn_svc_accuracies[sklearn_best_svc_C]:.4f}")
 
 # Двумерный график границы принятия решений по двум признакам
-X_vis = X_train_scaled[:, :2]
+X_vis = X_train_scaled[:, :2] 
+y_vis = y_train
 
-log_reg = LogisticRegressionL2(C=0.1)
-log_reg.fit(X_vis, y_train)
+log_reg = LogisticRegressionL2(C=best_log_reg_C)
+log_reg.fit(X_vis, y_vis)
 
-svm = LinearSVCL2(C=1000)
-svm.fit(X_vis, y_train)
+svm = LinearSVCL2(C=best_svc_C)
+svm.fit(X_vis, y_vis)
 
-log_reg_sklearn = LogisticRegression(C=0.1)
-log_reg_sklearn.fit(X_vis, y_train)
+log_reg_sklearn = LogisticRegression(C=sklearn_best_log_reg_C)
+log_reg_sklearn.fit(X_vis, y_vis)
 
-svm_sklearn = LinearSVC(C=1000)
-svm_sklearn.fit(X_vis, y_train)
+svm_sklearn = LinearSVC(C=sklearn_best_log_reg_C)
+svm_sklearn.fit(X_vis, y_vis)
 
 # Создание сетки значений для построения границы принятия решений
 x_min, x_max = X_vis[:, 0].min() - 1, X_vis[:, 0].max() + 1
@@ -183,7 +184,7 @@ plt.figure(figsize=(12, 10))
 # График для Logistic Regression
 plt.subplot(2, 2, 1)
 plt.contourf(xx, yy, Z_log_reg, alpha=0.8, cmap=plt.cm.RdYlBu)
-plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_train, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
+plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_vis, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
 plt.title('Logistic Regression')
 plt.xlabel('Признак 1')
 plt.ylabel('Признак 2')
@@ -191,7 +192,7 @@ plt.ylabel('Признак 2')
 # График для Linear SVM
 plt.subplot(2, 2, 2)
 plt.contourf(xx, yy, Z_svm, alpha=0.8, cmap=plt.cm.RdYlBu)
-plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_train, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
+plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_vis, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
 plt.title('Linear SVC')
 plt.xlabel('Признак 1')
 plt.ylabel('Признак 2')
@@ -199,7 +200,7 @@ plt.ylabel('Признак 2')
 # График для sklearn Logistic Regression
 plt.subplot(2, 2, 3)
 plt.contourf(xx, yy, Z_log_reg_sklearn, alpha=0.8, cmap=plt.cm.RdYlBu)
-plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_train, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
+plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_vis, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
 plt.title('sklearn Logistic Regression')
 plt.xlabel('Признак 1')
 plt.ylabel('Признак 2')
@@ -207,7 +208,7 @@ plt.ylabel('Признак 2')
 # График для sklearn Linear SVC
 plt.subplot(2, 2, 4)
 plt.contourf(xx, yy, Z_svm_sklearn, alpha=0.8, cmap=plt.cm.RdYlBu)
-plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_train, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
+plt.scatter(X_vis[:, 0], X_vis[:, 1], c=y_vis, edgecolors='k', marker='o', cmap=plt.cm.RdYlBu)
 plt.title('sklearn Linear SVC')
 plt.xlabel('Признак 1')
 plt.ylabel('Признак 2')

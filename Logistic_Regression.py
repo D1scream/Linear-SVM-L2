@@ -13,13 +13,13 @@ class LogisticRegressionL2:
         return 1 / (1 + np.exp(-z))
 
     def _compute_loss(self, y, y_pred):
-        m = len(y)
+        n = len(y)
         # Огранииваем логарифм (0,1)
         epsilon = 1e-9
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
         
-        loss = (-1 / m) * (np.dot(y, np.log(y_pred)) + np.dot(1 - y, np.log(1 - y_pred)))
-        loss += (self.C / (2 * m)) * np.sum(self.weights ** 2)
+        loss = (-1 / n) * (np.dot(y, np.log(y_pred)) + np.dot(1 - y, np.log(1 - y_pred)))
+        loss += (self.C / (2 * n)) * np.sum(self.weights ** 2)
 
         return loss
 
@@ -34,10 +34,8 @@ class LogisticRegressionL2:
             linear_model = np.dot(X, self.weights) + self.bias
             y_pred = self._sigmoid(linear_model)
             
-            dw = (1 / n) * np.dot(X.T, (y_pred - y))
+            dw = (1 / n) * np.dot(X.T, (y_pred - y)) + (self.C / n) * self.weights
             db = (1 / n) * np.sum(y_pred - y)
-
-            dw += (self.C / n) * self.weights
 
             self.weights -= self.learning_rate * dw
             self.bias -= self.learning_rate * db
