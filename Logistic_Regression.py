@@ -17,7 +17,8 @@ class LogisticRegressionL2:
         # Огранииваем логарифм (0,1)
         epsilon = 1e-9
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-        
+        # L(M) = log(1+exp^(-M)) - эквивалентная запись
+        # M = <x,w>y - отступ
         loss = (-1 / n) * (np.dot(y, np.log(y_pred)) + np.dot(1 - y, np.log(1 - y_pred)))
         loss += (self.C / (2 * n)) * np.sum(self.weights ** 2)
 
